@@ -6,6 +6,13 @@ interface Balance {
   total: number;
 }
 
+interface StoreData {
+  id: string;
+  title: string;
+  value: number;
+  type: 'income' | 'outcome';
+}
+
 class TransactionsRepository {
   private transactions: Transaction[];
 
@@ -14,15 +21,32 @@ class TransactionsRepository {
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
   public getBalance(): Balance {
-    // TODO
+    return this.transactions.reduce(
+      (acc: Balance, transaction: StoreData) => {
+        if (transaction.type === 'income') {
+          acc.income += transaction.value;
+        } else {
+          acc.outcome += transaction.value;
+        }
+        acc.total = acc.income - acc.outcome;
+        return acc;
+      },
+      {
+        income: 0,
+        outcome: 0,
+        total: 0,
+      },
+    );
   }
 
-  public create(): Transaction {
-    // TODO
+  public create(newTransaction: Transaction): Transaction {
+    this.transactions = [newTransaction, ...this.transactions];
+
+    return newTransaction;
   }
 }
 
